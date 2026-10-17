@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Plant Planner – วางแผนปลูกไม้ประดับ</title>
+<link rel="icon" id="fav" href="data:,"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g:#129251;--y:#FFF96B;--bg:#F3F9F5;--pale:#E6F4EB;--tx:#24332B;--tx2:#5d6d64;--bd:#DFE9E1;--er:#C62828;--wn:#9A6700}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font:16px/1.7 'Noto Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+header{background:var(--g);color:#fff;position:sticky;top:0;z-index:5}
+.hw{max-width:1100px;margin:auto;padding:8px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.logo{font-weight:700;font-size:1.2rem;margin-right:auto;background:none;border:0;color:#fff;cursor:pointer;font-family:inherit}
+.logo img{width:40px;height:40px;border-radius:10px;vertical-align:middle;margin-right:8px;box-shadow:0 0 0 2px #fff}
+#usr{font-size:.85rem;margin:0 4px}
+nav button{background:none;border:0;color:#fff;font:inherit;padding:6px 12px;border-radius:99px;cursor:pointer;min-height:40px}
+nav button.on{background:#fff;color:var(--g);font-weight:600}
+main{max-width:1100px;margin:auto;padding:16px 14px 60px}
+h1{font-size:1.6rem;margin:.2em 0 .4em}h2{font-size:1.2rem;margin:.2em 0 .5em}
+.card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.row{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.two{display:grid;gap:14px;grid-template-columns:1fr}@media(min-width:900px){.two{grid-template-columns:340px 1fr}}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:4px}
+input,select,textarea{width:100%;font:inherit;padding:9px 11px;border:1.5px solid var(--bd);border-radius:10px;background:#fff;color:var(--tx);min-height:44px}
+input:focus,select:focus,textarea:focus,button:focus-visible,summary:focus-visible{outline:3px solid var(--g);outline-offset:2px}
+.hl{background:var(--y)}
+.btn{background:var(--g);color:#fff;border:2px solid var(--g);border-radius:99px;font:inherit;font-weight:600;padding:8px 20px;cursor:pointer;min-height:44px}
+.btn.s{background:#fff;color:var(--g)}.btn.d{background:#fff;color:var(--er);border-color:var(--er)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.bar{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:14px}
+.steps{display:flex;gap:6px;margin-bottom:14px}.steps div{flex:1;text-align:center;font-size:.8rem;padding:6px 2px;border-radius:10px;background:var(--pale);color:var(--tx2)}
+.steps .on{background:var(--g);color:#fff;font-weight:600}.steps .dn{background:var(--g);color:#fff;opacity:.6}
+.note{background:var(--y);border-radius:10px;padding:10px 14px;font-size:.92rem;margin:10px 0;color:#3a3800}
+.warn{border-left:4px solid var(--wn);background:#fff8e6;padding:8px 12px;border-radius:8px;font-size:.9rem}
+.tag{display:inline-block;font-size:.78rem;border-radius:99px;padding:1px 10px;background:var(--pale);margin:2px 3px 2px 0}
+.ok{background:#d6f0e0;color:#0b5d33}.adj{background:#fff0c2;color:#7a5200}.bad{background:#fbdcdc;color:#8e1d1d}.unk{background:#eceff1;color:#455}
+.muted{color:var(--tx2);font-size:.9rem}.big{font-size:2rem;font-weight:700;color:var(--g);line-height:1.2}
+.svgw{overflow:auto;border:1px solid var(--bd);border-radius:12px;background:#fbfdfb;max-height:70vh;touch-action:pan-x pan-y pinch-zoom}
+.task{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--bd)}.task input[type=checkbox]{width:22px;height:22px;min-height:0;flex:none}
+.task.done span{text-decoration:line-through;color:var(--tx2)}
+dialog{border:0;border-radius:16px;max-width:560px;width:calc(100% - 28px);padding:20px}dialog::backdrop{background:#0006}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--tx);color:#fff;padding:10px 18px;border-radius:99px;display:none;z-index:9}
+.pr{display:none}
+@media print{header,.no-print,#toast{display:none!important}body{background:#fff}.card{break-inside:avoid;border-color:#bbb}.pr{display:block}.svgw{max-height:none;overflow:visible}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="hw"><button class="logo" data-go="dash" aria-label="หน้าแรก"><img id="hl" alt="" width="40" height="40">Plant Planner</button>
+<nav aria-label="เมนูหลัก" id="nav" hidden><button data-go="dash" id="n-dash">หน้าหลัก</button><button data-go="db" id="n-db">ฐานข้อมูลพืช</button><span id="usr"></span><button data-act="logout">ออกจากระบบ</button></nav></div></header>
+<main id="app"></main><div id="toast" role="status"></div><dialog id="dlg"></dialog>
+<script>
+'use strict';
+/* ===== ข้อมูลพืช: ชื่อไทย|ชื่อวิทยาศาสตร์|อังกฤษ|หมวด|แสง F/P/S|น้ำ L/M/H|ระยะปลูก(ม.)|ความยาก 1-3|คำอธิบายสั้น ===== */
+/* ระยะปลูกเป็นค่าประมาณเชิงปฏิบัติ ยังไม่ได้ตรวจกับแหล่งอ้างอิงรายตัว – ควรตรวจสอบก่อนใช้งานจริง */
+const PL=`กุหลาบ|Rosa spp.|Rose|ไม้ดอก|F|M|.6|3|ไม้ดอกยอดนิยม ชอบแดดเต็มวัน ต้องตัดแต่งและดูแลโรคใบ
+มะลิ|Jasminum sambac|Arabian jasmine|ไม้พุ่ม|F|M|.6|2|ดอกขาวหอม ใช้ไหว้พระ ปลูกง่ายในดินระบายน้ำดี
+ชบา|Hibiscus rosa-sinensis|Hibiscus|ไม้พุ่ม|F|M|.8|1|ไม้พุ่มดอกใหญ่ ทนร้อน ออกดอกแทบทั้งปี
+เฟื่องฟ้า|Bougainvillea spp.|Bougainvillea|ไม้พุ่ม|F|L|1|1|ใบประดับสีสดใส ทนแล้ง ชอบแดดจัด
+เข็ม|Ixora spp.|Ixora|ไม้พุ่ม|F|M|.6|1|ดอกช่อสีสด ใช้ปลูกเป็นแนวพุ่ม
+ดาวเรือง|Tagetes erecta|African marigold|ไม้ดอก|F|M|.3|1|ไม้ดอกล้มลุก ดอกเหลือง-ส้ม โตเร็ว
+บานไม่รู้โรย|Gomphrena globosa|Globe amaranth|ไม้ดอก|F|L|.3|1|ดอกกลมสีม่วง-ชมพู ทนแล้ง ดอกอยู่ได้นาน
+แพงพวย|Catharanthus roseus|Madagascar periwinkle|ไม้ดอก|F|L|.3|1|ออกดอกต่อเนื่อง ทนร้อนและแล้ง
+คุณนายตื่นสาย|Portulaca grandiflora|Moss rose|ไม้ดอก|F|L|.2|1|ไม้อวบน้ำคลุมดิน ดอกบานช่วงแดดจัด
+พิทูเนีย|Petunia × atkinsiana|Petunia|ไม้ดอก|F|M|.3|2|ดอกสีสวย เหมาะกระถางแขวน ไม่ชอบฝนชื้นจัด
+กล้วยไม้ (ตัวแทน: หวาย Dendrobium)|Dendrobium spp. (Orchidaceae)|Dendrobium orchid|ไม้ดอก|P|M|.3|3|กล้วยไม้หลายสกุล ระบุหวายเป็นตัวแทน ปลูกกระถาง/แขวน
+หน้าวัว|Anthurium andraeanum|Flamingo flower|ไม้ดอก|P|M|.5|2|ใบประดับมันวาว ชอบแสงรำไรและความชื้น
+เบญจมาศ|Chrysanthemum × morifolium|Florist's daisy|ไม้ดอก|F|M|.3|2|ไม้ดอกตัดดอก ชอบแดดและดินร่วน
+เยอบีร่า|Gerbera jamesonii|Gerbera daisy|ไม้ดอก|F|M|.3|2|ดอกเดซี่สีสด ไม่ชอบน้ำขังที่โคน
+ทานตะวัน|Helianthus annuus|Common sunflower|ไม้ดอก|F|M|.4|1|ไม้ล้มลุกสูง ชอบแดดเต็มวัน
+บานชื่น|Zinnia elegans|Zinnia|ไม้ดอก|F|M|.3|1|ไม้ดอกล้มลุก ปลูกง่าย สีหลากหลาย
+ผกากรอง|Lantana camara|Lantana|ไม้พุ่ม|F|L|.8|1|ดอกหลายสีในช่อเดียว ทนแล้ง (ส่วนต่างๆ มีพิษหากกิน)
+พุด|Gardenia jasminoides|Cape jasmine|ไม้พุ่ม|P|M|.8|2|ดอกขาวหอม ชอบดินร่วนชื้นระบายน้ำดี
+แก้ว|Murraya paniculata|Orange jasmine|ไม้พุ่ม|P|M|1|1|ดอกขาวหอม ปลูกเป็นไม้พุ่มหรือแนวรั้ว
+โมก|Wrightia religiosa|Water jasmine|ไม้พุ่ม|F|M|1|1|ดอกขาวหอม ทนน้ำชื้น ใช้ทำพุ่มตัดแต่ง
+พุดซ้อน (พันธุ์ปลูกเลี้ยงของ G. jasminoides)|Gardenia jasminoides (cultivar)|Double gardenia|ไม้พุ่ม|P|M|.8|2|พุดดอกซ้อน ข้อมูลเฉพาะพันธุ์ควรตรวจเพิ่ม
+โกสน|Codiaeum variegatum|Croton|ไม้ใบ|F|M|.6|1|ใบหลากสี สีสดเมื่อได้แดดมาก (ยางอาจระคายเคือง)
+สาวน้อยประแป้ง|Dieffenbachia seguine|Dumb cane|ไม้ใบ|S|M|.6|1|ใบด่างขนาดใหญ่ (มีพิษหากกิน ระวังเด็กและสัตว์เลี้ยง)
+พลูด่าง|Epipremnum aureum|Golden pothos|ไม้ใบ|S|M|.4|1|ไม้เลื้อยทนร่ม ปลูกง่าย (มีพิษหากกิน)
+เดหลี|Spathiphyllum wallisii|Peace lily|ไม้ใบ|S|M|.5|1|ใบเขียวเข้ม ดอกขาว ชอบร่มและความชื้น (มีพิษหากกิน)
+ลิ้นมังกร|Dracaena trifasciata|Snake plant|ไม้ใบ|P|L|.4|1|ทนแล้งมาก ทนแสงน้อย ระวังรดน้ำมากเกิน
+กวักมรกต|Zamioculcas zamiifolia|ZZ plant|ไม้ใบ|S|L|.5|1|ทนแล้งและร่มเงา (มีพิษหากกิน)
+เศรษฐีเรือนใน|Chlorophytum comosum|Spider plant|ไม้ใบ|P|M|.3|1|ใบเรียวมีลายขาว เหมาะกระถางแขวน
+ฟิโลเดนดรอน (ตัวแทน: P. hederaceum)|Philodendron hederaceum|Heartleaf philodendron|ไม้ใบ|S|M|.5|1|ไม้เลื้อยใบรูปหัวใจ (มีพิษหากกิน)
+อโกลนีมา|Aglaonema commutatum|Chinese evergreen|ไม้ใบ|S|M|.5|1|ใบด่างสวย ทนร่ม (มีพิษหากกิน)`.split('\n').map((r,i)=>{const a=r.split('|');return{id:i+1,th:a[0],sci:a[1],en:a[2],cat:a[3],sun:a[4],w:a[5],sp:+a[6],df:+a[7],d:a[8]}});
+const SUN={F:'แดดเต็มวัน',P:'แดดรำไร/ครึ่งวัน',S:'ร่มเงา','?':'ไม่แน่ใจ'},WAT={L:'น้อย (ทนแล้ง)',M:'ปานกลาง',H:'มาก'},DF=['','ง่าย','ปานกลาง','ต้องดูแลมาก'];
+const WTIP={L:'รดเมื่อดินแห้งสนิทลึกราว 2–3 ซม. หลีกเลี่ยงน้ำขัง',M:'รักษาความชื้นดินให้สม่ำเสมอ แต่ไม่แฉะ',H:'ต้องการความชื้นสูง ตรวจดินบ่อย'};
+const COL=['#129251','#d9534f','#2f6fdb','#c98a00','#8a4fbf','#00838f','#e0559f','#6d4c41'];
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PD=id=>PL.find(p=>p.id===id);
+const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+const r2=x=>Math.round(x*100)/100;
+
+/* ===== ตรรกะคำนวณ (แยกจาก UI) ===== */
+/* ธรรมเนียม: ต้นแรกอยู่ที่ระยะ margin จากขอบ; คอลัมน์ = floor(กว้างใช้งาน/ระยะแนวนอน)+1; แถว = floor(ยาวใช้งาน/ระยะแนวตั้ง)+1
+   แบบสลับแถว: แถวคี่เลื่อน h/2 และจำนวนต้นต่อแถวคิดจากความกว้างที่เหลือ; ระยะแถว = ระยะแนวตั้งที่ผู้ใช้กำหนด */
+function gridPts(uw,ul,h,v,pat){const E=1e-9,pts=[];if(!(uw>=0)||!(ul>=0)||!(h>0)||!(v>0))return pts;
+ const rows=Math.floor(ul/v+E)+1;for(let r=0;r<rows;r++){const off=pat==='s'&&r%2?h/2:0;if(uw-off<-E)continue;const c=Math.floor((uw-off)/h+E)+1;for(let i=0;i<c;i++)pts.push([off+i*h,r*v])}return pts}
+function calcArea(w,l){return w>0&&l>0&&isFinite(w)&&isFinite(l)?r2(w*l):null}
+function calcProject(p){const w=+p.w,l=+p.l,m=+p.margin||0;
+ if(!(w>0&&l>0))return{err:'กรอกความกว้างและความยาวให้มากกว่า 0'};
+ if(m<0)return{err:'ระยะเว้นขอบต้องไม่ติดลบ'};
+ const uw=w-2*m,ul=l-2*m;if(uw<0||ul<0)return{err:'ระยะเว้นขอบมากเกินไป พื้นที่ใช้งานติดลบ'};
+ if(!p.plants.length)return{err:'ยังไม่ได้เลือกพืช'};
+ for(const s of p.plants)if(!(+s.h>0&&+s.v>0))return{err:'ระยะปลูกของ '+PD(s.pid).th+' ต้องมากกว่า 0'};
+ const tot=p.plants.reduce((a,s)=>a+(+s.pct||0),0);if(!(tot>0))return{err:'สัดส่วนพื้นที่รวมต้องมากกว่า 0'};
+ let cum=0;const n=p.plants.length;const zones=p.plants.map((s,i)=>{const len=ul*(+s.pct||0)/tot,h=+s.h,v=+s.v;
+  const pt=i>0?v/2:0,pb=i<n-1?v/2:0,eff=len-pt-pb;let pts=eff>=0?gridPts(uw,eff,h,v,s.pat):[];
+  const y0=m+cum+pt;pts=pts.map(q=>[m+q[0],y0+q[1]]);const z={s,pid:s.pid,start:m+cum,len,pts,count:pts.length};cum+=len;return z});
+ const total=zones.reduce((a,z)=>a+z.count,0),gross=r2(w*l),usable=r2(uw*ul);
+ const used=zones.reduce((a,z)=>a+z.count*z.s.h*z.s.v,0);
+ return{zones,total,gross,usable,reserved:r2(gross-usable),perPlant:total?r2(usable/total):null,unused:r2(Math.max(0,usable-used)),uw:r2(uw),ul:r2(ul),ver:1}}
+function suit(pl,p){const w=+p.w,l=+p.l;if(!p.sun||p.sun==='?')return['unk','ข้อมูลไม่พอ','ยังไม่ทราบปริมาณแสงของพื้นที่'];
+ if(w>0&&l>0&&pl.sp>Math.min(w,l)-2*(+p.margin||0))return['bad','ไม่แนะนำ','พื้นที่แคบเกินกว่าจะวางพืชนี้ตามระยะปลูกแนะนำ'];
+ const k=pl.sun+p.sun;if(k==='FS'||k==='SF')return['bad','ไม่แนะนำ','ความต้องการแสง ('+SUN[pl.sun]+') ไม่ตรงกับพื้นที่ ('+SUN[p.sun]+')'];
+ if(pl.sun!==p.sun)return['adj','ปรับสภาพได้','แสงไม่ตรงนัก (พืชต้องการ'+SUN[pl.sun]+') อาจต้องพรางแสงหรือย้ายตำแหน่ง'];
+ if(p.drain==='poor'&&pl.w==='L')return['adj','ปรับสภาพได้','พืชนี้ไม่ชอบน้ำขัง แต่ระบายน้ำของพื้นที่ไม่ดี ควรยกแปลงหรือผสมดินให้โปร่ง'];
+ return['ok','เหมาะสม','แสงสอดคล้องกับความต้องการของพืช (เป็นคำแนะนำเบื้องต้น ไม่รับประกันการรอด)']}
+function selfTest(){const a=gridPts(4,5,1,1,'g').length,b=calcArea(4,5);console.assert(a===30&&b===20,'selfTest ล้มเหลว');
+ const c=calcProject({w:4,l:5,margin:.5,plants:[{pid:1,pct:100,h:1,v:1,pat:'g'}]});console.assert(c.total===(4)*(5),'margin test');
+ console.assert(calcProject({w:1,l:1,margin:.6,plants:[{pid:1,pct:1,h:1,v:1}]}).err,'invalid margin');return{grid:a,area:b,margin:c.total}}
+if(location.search.includes('test'))console.log('selfTest',selfTest());
+
+/* ===== สถานะ & จัดเก็บ (localStorage ในเบราว์เซอร์นี้เท่านั้น) ===== */
+let DB=[];try{DB=JSON.parse(localStorage.getItem('pp_projects')||'[]')}catch(e){DB=[]}
+const LOGO='data:image/png;base64,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';
+const S={view:'dash',mode:'in',user:null,p:null,q:'',cat:'',sun:'',fit:false,zoom:1,dirty:false,sel:''};
+let USERS=[];try{USERS=JSON.parse(localStorage.getItem('pp_users')||'[]')}catch(e){}
+const saveU=()=>{try{localStorage.setItem('pp_users',JSON.stringify(USERS));return true}catch(e){return false}};
+const saveDB=()=>{try{localStorage.setItem('pp_projects',JSON.stringify(DB));return true}catch(e){return false}};
+const mine=()=>S.user?DB.filter(x=>x.owner===S.user.id):[],own=id=>DB.find(x=>x.id===id&&S.user&&x.owner===S.user.id);
+const b64=u=>btoa(String.fromCharCode(...u)),ub=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+async function hashPw(pw,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);return b64(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:150000},k,256)))}
+const persist=()=>{if(!S.p||!S.user)return;S.p.owner=S.user.id;S.p.updated=new Date().toISOString();const i=DB.findIndex(x=>x.id===S.p.id&&x.owner===S.user.id);i<0?DB.push(S.p):DB[i]=S.p;try{localStorage.setItem('pp_projects',JSON.stringify(DB));S.dirty=false;return true}catch(e){toast('บันทึกไม่สำเร็จ (พื้นที่เบราว์เซอร์เต็มหรือถูกปิดใช้งาน)');return false}};
+const newP=()=>({id:'p'+Date.now(),name:'',loc:'',w:'',l:'',margin:.3,sun:'',soil:'ร่วน',ph:'',drain:'good',water:'ก๊อกน้ำ/สายยาง',style:'แปลงดิน',notes:'',plants:[],tasks:[],updated:''});
+const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2600)};
+function go(v,pid){if(S.dirty&&S.p&&!confirm('มีการแก้ไขที่ยังไม่ได้บันทึก ต้องการออกโดยไม่บันทึกหรือไม่?'))return;
+ if(pid){const o=own(pid);if(!o)return;S.p=JSON.parse(JSON.stringify(o));}S.dirty=false;if(v==='dash'||v==='db'){if(v==='dash')S.p=null}S.view=v;render();scrollTo(0,0)}
+addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue=''}});
+
+/* ===== วาดหน้าจอ ===== */
+const STEPS=['ข้อมูลพื้นที่','เลือกพืช','แผนผัง','แผนดูแล'];
+const stepBar=n=>`<div class="steps no-print" role="list">${STEPS.map((s,i)=>`<div role="listitem" class="${i+1===n?'on':i+1<n?'dn':''}">${i+1}. ${s}</div>`).join('')}</div>`;
+function render(){if(!S.user)S.view='login';const v=S.view;$('#nav').hidden=!S.user;$('#usr').textContent=S.user?'👤 '+S.user.name:'';$('#n-dash').classList.toggle('on',v==='dash');$('#n-db').classList.toggle('on',v==='db');
+ $('#app').innerHTML=({login,dash,db,s1,s2,s3,s4})[v]();if(v==='s2'||v==='db')bindCat()}
+function dash(){const n=mine().length,pl=new Set(mine().flatMap(p=>p.plants.map(x=>x.pid))).size;
+ const recent=[...mine()].sort((a,b)=>b.updated.localeCompare(a.updated)).slice(0,6);
+ return`<h1>สวัสดี ${esc(S.user.name)} 🌱</h1><p class="muted">วางแผนปลูกไม้ประดับใน 4 ขั้นตอน: ข้อมูลพื้นที่ → เลือกพืช → แผนผังการปลูก → แผนดูแล</p>
+<div class="row"><div class="card"><div class="muted">โครงการที่บันทึกไว้</div><div class="big">${n}</div></div><div class="card"><div class="muted">พันธุ์พืชที่เลือกใช้</div><div class="big">${n?pl:'–'}</div></div></div>
+<div class="bar" style="justify-content:flex-start"><button class="btn" data-act="new">+ เริ่มแผนปลูกใหม่</button><button class="btn s" data-go="db">ดูฐานข้อมูลพืช</button></div>
+<h2 style="margin-top:20px">โครงการล่าสุด</h2>${recent.length?`<div class="grid">${recent.map(p=>{const c=calcProject(p);return`<div class="card"><b>${esc(p.name||'ไม่มีชื่อ')}</b><div class="muted">${esc(p.loc)}</div><p>พื้นที่ ${calcArea(+p.w,+p.l)??'–'} ตร.ม. · พืช ${p.plants.length} ชนิด${c.total!=null?' · ประมาณ '+c.total+' ต้น':''}</p><div class="bar" style="margin:0;justify-content:flex-start"><button class="btn" data-act="open" data-id="${p.id}">เปิด</button><button class="btn s" data-act="dup" data-id="${p.id}">ทำสำเนา</button><button class="btn d" data-act="del" data-id="${p.id}">ลบ</button></div></div>`}).join('')}</div>`:`<div class="card">ยังไม่มีโครงการ กด “เริ่มแผนปลูกใหม่” เพื่อเริ่มต้น เตรียมแค่ความกว้างและความยาวของพื้นที่ปลูก</div>`}
+<div class="note">💡 เคล็ดลับ: ดูแดดของพื้นที่ตั้งแต่เช้าถึงบ่าย ถ้ามีแดดตรงเกิน 6 ชั่วโมงถือว่าแดดเต็มวัน ถ้า 3–6 ชั่วโมงคือแดดรำไร</div>
+<p class="muted">บัญชีและโครงการเก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น (ไม่มีเซิร์ฟเวอร์) ล้างข้อมูลเบราว์เซอร์แล้วข้อมูลจะหาย</p>`}
+function catCards(list,p){return list.map(pl=>{const sel=p&&p.plants.some(x=>x.pid===pl.id),su=p&&p.sun?suit(pl,p):null;
+ return`<div class="card" style="margin:0"><div style="height:70px;border-radius:10px;background:var(--pale);display:grid;place-items:center;font-size:2rem" aria-hidden="true">${pl.cat==='ไม้ใบ'?'🌿':pl.cat==='ไม้พุ่ม'?'🌳':'🌸'}</div>
+<b>${esc(pl.th)}</b><div class="muted"><i>${esc(pl.sci)}</i></div><p style="margin:.3em 0;font-size:.92rem">${esc(pl.d)}</p>
+<span class="tag">☀ ${SUN[pl.sun]}</span><span class="tag">💧 ${WAT[pl.w]}</span><span class="tag">↔ ${pl.sp} ม.</span>${su?`<div><span class="tag ${su[0]}">${su[0]==='ok'?'✓':su[0]==='bad'?'✕':su[0]==='adj'?'△':'?'} ${su[1]}</span></div>`:''}
+<div class="bar" style="margin:8px 0 0;justify-content:flex-start"><button class="btn s" data-act="info" data-id="${pl.id}">รายละเอียด</button>${p?`<button class="btn ${sel?'d':''}" data-act="tog" data-id="${pl.id}">${sel?'เอาออก':'เลือก'}</button>`:''}</div></div>`}).join('')}
+function filtered(p){const q=S.q.trim().toLowerCase();return PL.filter(x=>(!q||(x.th+x.sci+x.en).toLowerCase().includes(q))&&(!S.cat||x.cat===S.cat)&&(!S.sun||x.sun===S.sun)&&(!S.fit||!p||suit(x,p)[0]==='ok'))}
+const filt=p=>`<div class="card no-print"><div class="row"><div><label for="q">ค้นหา (ชื่อไทย/อังกฤษ/วิทยาศาสตร์)</label><input id="q" type="search" value="${esc(S.q)}" placeholder="เช่น กุหลาบ, Rosa"></div>
+<div><label for="fc">หมวด</label><select id="fc"><option value="">ทั้งหมด</option>${['ไม้ดอก','ไม้พุ่ม','ไม้ใบ'].map(c=>`<option ${S.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+<div><label for="fs">ความต้องการแสง</label><select id="fs"><option value="">ทั้งหมด</option>${['F','P','S'].map(c=>`<option value="${c}" ${S.sun===c?'selected':''}>${SUN[c]}</option>`).join('')}</select></div>
+${p?`<div><label>&nbsp;</label><label style="font-weight:400"><input type="checkbox" id="ff" style="width:auto;min-height:0" ${S.fit?'checked':''}> เฉพาะที่เหมาะกับโครงการนี้</label></div>`:''}</div></div><div id="cl" class="grid"></div>`;
+function db(){return`<h1>ฐานข้อมูลพืช (${PL.length} ชนิด)</h1><div class="warn">ข้อมูลเป็นแนวทางเบื้องต้นสำหรับสวนในประเทศไทย ยังไม่ได้ตรวจกับแหล่งอ้างอิงรายชนิด ไม่ใช่คำแนะนำเฉพาะทางการเกษตร</div>${filt(null)}`}
+function s1(){const p=S.p,ar=calcArea(+p.w,+p.l);const o=(k,arr)=>arr.map(([v,t])=>`<option value="${v}" ${p[k]===v?'selected':''}>${t}</option>`).join('');
+ const f=(k,l,t='text',x='')=>`<div><label for="${k}">${l}</label><input id="${k}" data-k="${k}" type="${t}" value="${esc(p[k])}" ${x}></div>`;
+ return stepBar(1)+`<h1>ข้อมูลพื้นที่ปลูก</h1><div class="card"><div class="row">${f('name','ชื่อโครงการ *','text','required maxlength=80')}${f('loc','ชื่อ/ตำแหน่งพื้นที่','text','maxlength=80')}
+<div><label for="shape">รูปทรงพื้นที่</label><select id="shape" disabled><option>สี่เหลี่ยมผืนผ้า (รุ่นนี้รองรับแบบเดียว)</option></select></div>
+${f('w','ความกว้าง (เมตร) *','number','min=0.1 step=any inputmode=decimal class=hl')}${f('l','ความยาว (เมตร) *','number','min=0.1 step=any inputmode=decimal class=hl')}${f('margin','ระยะเว้นขอบ (เมตร)','number','min=0 step=any')}</div>
+<div class="note" id="ar">${ar?`พื้นที่ = ${p.w} × ${p.l} = <b>${ar} ตารางเมตร</b>`:'กรอกความกว้างและความยาวเพื่อดูพื้นที่ (กว้าง × ยาว)'}</div>
+<div class="row"><div><label for="sun">แสงแดดที่ได้รับ</label><select id="sun" data-k="sun"><option value="">เลือก…</option>${o('sun',[['F','แดดเต็มวัน (>6 ชม.)'],['P','แดดรำไร (3–6 ชม.)'],['S','ร่มเงา (<3 ชม.)'],['?','ไม่แน่ใจ']])}</select></div>
+<div><label for="soil">ชนิดดิน</label><select id="soil" data-k="soil">${o('soil',[['ร่วน','ดินร่วน'],['เหนียว','ดินเหนียว'],['ทราย','ดินทราย'],['ไม่แน่ใจ','ไม่แน่ใจ']])}</select></div>
+${f('ph','ค่า pH ดิน (ถ้าทราบ)','number','min=0 max=14 step=0.1')}
+<div><label for="drain">การระบายน้ำ</label><select id="drain" data-k="drain">${o('drain',[['good','ดี (น้ำไม่ขัง)'],['mid','ปานกลาง'],['poor','ไม่ดี (น้ำขังนาน)']])}</select></div>
+<div><label for="water">แหล่งน้ำ</label><select id="water" data-k="water">${o('water',[['ก๊อกน้ำ/สายยาง','ก๊อกน้ำ/สายยาง'],['น้ำฝนเท่านั้น','น้ำฝนเท่านั้น'],['ระบบน้ำหยด','ระบบน้ำหยด'],['อื่นๆ','อื่นๆ']])}</select></div>
+<div><label for="style">รูปแบบการปลูก</label><select id="style" data-k="style">${o('style',[['แปลงดิน','แปลงดิน'],['แนวขอบ','แนวขอบ/รั้ว'],['กระถาง','กระถางจัดวาง']])}</select></div></div>
+<div style="margin-top:12px"><label for="notes">หมายเหตุ</label><textarea id="notes" data-k="notes" rows="2" maxlength=500>${esc(p.notes)}</textarea></div></div>
+<div class="bar"><button class="btn s" data-go="dash">ยกเลิก</button><span><button class="btn s" data-act="save">บันทึก</button> <button class="btn" data-act="n1">ถัดไป: เลือกพืช</button></span></div>`}
+function s2(){const p=S.p;return stepBar(2)+`<h1>เลือกพืช <span class="muted" style="font-size:1rem">เลือกแล้ว ${p.plants.length} ชนิด</span></h1><div class="warn">ความเหมาะสมเป็นคำแนะนำเบื้องต้นจากกฎง่ายๆ ไม่ใช่การรับประกันว่าพืชจะรอด</div>${filt(p)}<div class="bar"><button class="btn s" data-act="b1">ย้อนกลับ</button><span><button class="btn s" data-act="save">บันทึก</button> <button class="btn" data-act="n2">ถัดไป: แผนผัง</button></span></div>`}
+function bindCat(){const p=S.view==='s2'?S.p:null;const draw=()=>{const l=filtered(p);$('#cl').innerHTML=l.length?catCards(l,p):'<div class="card">ไม่พบพืชที่ตรงกับตัวกรอง ลองล้างคำค้นหาหรือเปลี่ยนตัวกรอง</div>'};draw();
+ let t;$('#q').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{S.q=e.target.value;draw()},200)};$('#fc').onchange=e=>{S.cat=e.target.value;draw()};$('#fs').onchange=e=>{S.sun=e.target.value;draw()};const ff=$('#ff');if(ff)ff.onchange=e=>{S.fit=e.target.checked;draw()}}
+function s3(){const p=S.p,c=calcProject(p),sel=p.plants;
+ const cfg=sel.map((s,i)=>{const pl=PD(s.pid);return`<div class="card" style="margin:0 0 10px"><b style="color:${COL[i%8]}">${SHP(i)} ${esc(pl.th)}</b><div class="row" style="margin-top:6px">
+<div><label>สัดส่วนพื้นที่ (%)</label><input type="number" min=0 step=any data-i="${i}" data-f="pct" value="${s.pct}"></div>
+<div><label>ระยะแนวนอน (ม.)</label><input type="number" min=0.01 step=any data-i="${i}" data-f="h" value="${s.h}"></div>
+<div><label>ระยะแนวตั้ง (ม.)</label><input type="number" min=0.01 step=any data-i="${i}" data-f="v" value="${s.v}"></div>
+<div><label>รูปแบบ</label><select data-i="${i}" data-f="pat"><option value="g" ${s.pat==='g'?'selected':''}>ตารางสี่เหลี่ยม</option><option value="s" ${s.pat==='s'?'selected':''}>สลับแถว</option></select></div></div></div>`}).join('');
+ return stepBar(3)+`<h1>แผนผังการปลูกและการคำนวณ</h1><div class="two"><div><div class="card"><h2>ตั้งค่า</h2><div class="row"><div><label for="w">กว้าง (ม.)</label><input id="w" data-k="w" type="number" step=any min=0.1 value="${p.w}"></div><div><label for="l">ยาว (ม.)</label><input id="l" data-k="l" type="number" step=any min=0.1 value="${p.l}"></div><div><label for="margin">เว้นขอบ (ม.)</label><input id="margin" data-k="margin" type="number" step=any min=0 value="${p.margin}"></div></div></div>${cfg||'<div class="card">ยังไม่ได้เลือกพืช</div>'}
+<button class="btn" style="width:100%" data-act="calc">คำนวณใหม่</button><div class="muted" style="margin-top:6px">ผลลัพธ์อัปเดตทันทีเมื่อแก้ค่า แผนนี้เป็นการประมาณ ควรวัดหน้างานจริงอีกครั้ง</div></div>
+<div id="res">${resHtml(p,c)}</div></div><div class="bar"><button class="btn s" data-act="b2">ย้อนกลับ</button><span><button class="btn s" data-act="save">บันทึก</button> <button class="btn" data-act="n3">ถัดไป: แผนดูแล</button></span></div>`}
+const SHP=i=>['●','■','▲','◆','★','⬟','⬢','✚'][i%8];
+function resHtml(p,c){if(c.err)return`<div class="card warn">⚠ ${esc(c.err)}</div>`;
+ const rows=c.zones.map((z,i)=>`<tr><td style="color:${COL[i%8]}">${SHP(i)} ${esc(PD(z.pid).th)}</td><td>${z.count} ต้น</td><td>${z.s.h}×${z.s.v} ม.</td></tr>`).join('');
+ return`<div class="card"><div class="row"><div><div class="muted">พื้นที่ทั้งหมด</div><b>${c.gross} ตร.ม.</b></div><div><div class="muted">พื้นที่ใช้งาน (หักขอบ)</div><b>${c.usable} ตร.ม.</b></div><div><div class="muted">พื้นที่เว้นขอบ</div><b>${c.reserved} ตร.ม.</b></div><div><div class="muted">รวมทั้งหมด</div><b class="big">${c.total} ต้น</b></div><div><div class="muted">พื้นที่ต่อต้น (เฉลี่ย)</div><b>${c.perPlant??'–'} ตร.ม.</b></div><div><div class="muted">พื้นที่เหลือประมาณ</div><b>${c.unused} ตร.ม.</b></div></div>
+<table style="width:100%;margin-top:10px;border-collapse:collapse"><tr class="muted"><th align=left>พืช</th><th align=left>จำนวน</th><th align=left>ระยะ</th></tr>${rows}</table>
+<p class="muted">พืชหลายชนิดแบ่งเป็นโซนตามสัดส่วนความยาวพื้นที่ ไม่นับซ้ำกัน · ${c.zones.length>1?'ระหว่างโซนเว้นครึ่งหนึ่งของระยะปลูกแต่ละฝั่ง':''}</p></div>
+<div class="card"><div class="bar no-print" style="margin:0 0 8px;justify-content:flex-start"><button class="btn s" data-act="zi" aria-label="ขยาย">＋</button><button class="btn s" data-act="zo" aria-label="ย่อ">－</button><button class="btn s" data-act="zr">พอดีหน้าจอ</button></div>
+<div class="svgw" id="svgw">${svg(p,c)}</div><div id="inf" class="muted" aria-live="polite">แตะที่จุดเพื่อดูชื่อพืช</div></div>`}
+function svg(p,c){if(c.err)return'';const w=+p.w,l=+p.l,pad=Math.max(w,l)*.08,fs=Math.max(w,l)/32,W=w+pad*2,H=l+pad*2;
+ const shape=(i,x,y,r,col,pid)=>{const a=`data-n="${esc(PD(pid).th)}" fill="${col}" stroke="#fff" stroke-width="${r*.12}" style="cursor:pointer"`,k=i%4;
+  return k===0?`<circle cx="${x}" cy="${y}" r="${r}" ${a}/>`:k===1?`<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" ${a}/>`:k===2?`<polygon points="${x},${y-r} ${x+r},${y+r} ${x-r},${y+r}" ${a}/>`:`<polygon points="${x},${y-r} ${x+r},${y} ${x},${y+r} ${x-r},${y}" ${a}/>`};
+ let s=`<svg viewBox="${-pad} ${-pad} ${W} ${H}" style="width:${S.zoom*100}%;min-width:${S.zoom*100}%;display:block" role="img" aria-label="ผังการปลูกมุมมองจากด้านบน พื้นที่ ${w} คูณ ${l} เมตร รวม ${c.total} ต้น"><rect x="0" y="0" width="${w}" height="${l}" fill="#f1f8f3" stroke="#129251" stroke-width="${fs/8}"/>`;
+ const m=+p.margin||0;s+=`<rect x="${m}" y="${m}" width="${c.uw}" height="${c.ul}" fill="none" stroke="#999" stroke-dasharray="${fs/3} ${fs/3}" stroke-width="${fs/14}"/>`;
+ c.zones.forEach((z,i)=>{const r=Math.min(z.s.h,z.s.v)*.36;if(i>0)s+=`<line x1="0" x2="${w}" y1="${z.start}" y2="${z.start}" stroke="#bbb" stroke-width="${fs/14}" stroke-dasharray="${fs/4}"/>`;z.pts.forEach(q=>s+=shape(i,r2(q[0]),r2(q[1]),r,COL[i%8],z.pid))});
+ s+=`<text x="${w/2}" y="${-pad/3}" font-size="${fs}" text-anchor="middle" fill="#24332B">${w} ม.</text><text transform="translate(${-pad/3} ${l/2}) rotate(-90)" font-size="${fs}" text-anchor="middle" fill="#24332B">${l} ม.</text></svg>`;
+ return s+`<div style="padding:6px 10px;font-size:.85rem">${c.zones.map((z,i)=>`<span style="color:${COL[i%8]};margin-right:12px">${SHP(i)} ${esc(PD(z.pid).th)} (${z.count})</span>`).join('')}</div>`}
+function mkTasks(p){if(p.tasks.length)return;p.tasks=['ตรวจความชื้นดินก่อนรดน้ำ','รดน้ำตามความต้องการของพืช','ถอนวัชพืช','ตรวจหาแมลงและโรค','ใส่ปุ๋ย (ตามฉลากของผลิตภัณฑ์)','ตัดแต่งกิ่ง/ใบแห้ง'].map((t,i)=>({id:'t'+i+Date.now(),t,due:'',done:false}))}
+function s4(){const p=S.p;mkTasks(p);const c=calcProject(p),td=today();
+ const st=t=>t.done?'':!t.due?'':t.due<td?'<span class="tag bad">เลยกำหนด</span>':t.due===td?'<span class="tag adj">ครบกำหนดวันนี้</span>':'<span class="tag unk">กำลังจะถึง</span>';
+ const g=p.plants.map(s=>{const pl=PD(s.pid);return`<div class="card" style="margin:0 0 8px"><b>${esc(pl.th)}</b> <i class="muted">${esc(pl.sci)}</i><ul style="margin:.3em 0"><li>น้ำ: ${WTIP[pl.w]}</li><li>แสง: ${SUN[pl.sun]}</li><li>ระยะปลูก ${s.h}×${s.v} ม. (${s.pat==='s'?'สลับแถว':'ตาราง'})</li><li>ดินต้องระบายน้ำดี ใส่ปุ๋ยและตัดแต่งตามฉลาก/ช่วงการเจริญเติบโต ตรวจแมลงสม่ำเสมอ</li>${/มีพิษ|ระคาย/.test(pl.d)?'<li class="warn">⚠ '+esc(pl.d.match(/\\([^)]*\\)/)?.[0]||'ระวังความเป็นพิษ')+'</li>':''}</ul></div>`}).join('');
+ return stepBar(4)+`<h1 class="pr">Plant Planner – ${esc(p.name)}</h1><h1 class="no-print">แผนดูแลและสรุปโครงการ</h1>
+<div class="card"><h2>${esc(p.name||'ไม่มีชื่อ')}</h2><p>${esc(p.loc)} · ${p.w}×${p.l} ม. = ${calcArea(+p.w,+p.l)??'–'} ตร.ม. · แสง: ${SUN[p.sun]||'–'} · ดิน: ${esc(p.soil)} · ระบายน้ำ: ${{good:'ดี',mid:'ปานกลาง',poor:'ไม่ดี'}[p.drain]} · วันที่ ${td}</p>${p.notes?`<p>หมายเหตุ: ${esc(p.notes)}</p>`:''}</div>
+<div class="card"><h2>แผนผังที่คำนวณ</h2>${c.err?`<div class="warn">${esc(c.err)} – กลับไปแก้ในขั้นที่ 3</div>`:`<p>รวม <b>${c.total} ต้น</b> · พื้นที่ใช้งาน ${c.usable} ตร.ม. ${c.zones.map(z=>`· ${esc(PD(z.pid).th)} ${z.count} ต้น`).join(' ')}</p><div class="svgw">${svg(p,c)}</div>`}</div>
+<div class="card"><h2>คำแนะนำรายพืช</h2>${g||'ไม่ได้เลือกพืช'}<p class="muted">ความถี่การรดน้ำ/ใส่ปุ๋ยขึ้นกับสภาพอากาศและดินจริง ใช้เป็นแนวทางเท่านั้น</p></div>
+<div class="card"><h2>รายการงานดูแล</h2>${p.tasks.map(t=>`<div class="task ${t.done?'done':''}"><input type="checkbox" data-act="chk" data-id="${t.id}" ${t.done?'checked':''} aria-label="${esc(t.t)}"><span style="flex:1">${esc(t.t)} ${t.due?'<small class="muted">('+t.due+')</small>':''} ${st(t)}</span><button class="btn s no-print" style="min-height:36px;padding:2px 12px" data-act="dt" data-id="${t.id}" aria-label="ลบงาน">ลบ</button></div>`).join('')}
+<div class="row no-print" style="margin-top:10px"><div><label for="nt">เพิ่มงานของฉัน</label><input id="nt" maxlength=100></div><div><label for="nd">วันครบกำหนด</label><input id="nd" type="date"></div><div><label>&nbsp;</label><button class="btn" data-act="at" style="width:100%">เพิ่มงาน</button></div></div>
+<p class="muted no-print">ยังไม่มีระบบแจ้งเตือนจริง ระบบแสดงสถานะเลยกำหนด/วันนี้ตามเวลา Asia/Bangkok เมื่อเปิดหน้านี้เท่านั้น</p></div>
+<div class="bar no-print"><button class="btn s" data-act="b3">กลับไปปรับแผนผัง</button><span><button class="btn s" data-act="pdf">พิมพ์ / บันทึกเป็น PDF</button> <button class="btn" data-act="fin">บันทึกโครงการ</button></span></div>`}
+
+/* ===== บัญชีผู้ใช้ (ในเครื่องนี้เท่านั้น) ===== */
+function login(){const up=S.mode==='up',f=(id,l,t,x='')=>`<div style="margin-bottom:10px"><label for="${id}">${l}</label><input id="${id}" name="${id}" type="${t}" ${x}></div>`;
+ return`<div class="card" style="max-width:440px;margin:16px auto;text-align:center"><img src="${LOGO}" alt="Plant Planner" width="150" height="150" style="border-radius:24px"><h1>${up?'สมัครสมาชิก':'เข้าสู่ระบบ'}</h1><p class="muted">${up?'สร้างบัญชีเพื่อเก็บแผนปลูกของคุณ':'ยินดีต้อนรับ เข้าสู่ระบบเพื่อดูแผนปลูกของคุณ'}</p>
+<form id="af" style="text-align:left" novalidate>${up?f('name','ชื่อที่แสดง','text','maxlength=40 autocomplete=nickname'):''}${f('email','อีเมล','email','autocomplete=email inputmode=email')}${f('pw','รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)','password','autocomplete='+(up?'new-password':'current-password'))}
+<button type="button" class="btn s" data-act="eye" style="min-height:36px;padding:2px 14px;margin-bottom:10px">แสดง/ซ่อนรหัสผ่าน</button>
+<div id="aerr" class="warn" role="alert" hidden></div><button class="btn" id="asub" style="width:100%;margin-top:10px">${up?'สมัครสมาชิก':'เข้าสู่ระบบ'}</button></form>
+<p><button class="btn s" data-act="mode">${up?'มีบัญชีแล้ว? เข้าสู่ระบบ':'ยังไม่มีบัญชี? สมัครสมาชิก'}</button></p>
+<details style="text-align:left"><summary style="cursor:pointer">ลืมรหัสผ่าน?</summary><p class="muted">แอปนี้ไม่มีเซิร์ฟเวอร์ จึงส่งอีเมลรีเซ็ตรหัสผ่านไม่ได้ ทางเดียวคือลบบัญชีในเครื่องนี้ (รวมโครงการของบัญชีนั้น) แล้วสมัครใหม่</p><label for="dem">อีเมลของบัญชีที่จะลบ</label><input id="dem" type="email"><button class="btn d" data-act="delacc" style="margin-top:8px">ลบบัญชีนี้ในเครื่อง</button></details>
+<div class="warn" style="text-align:left;margin-top:12px">บัญชีนี้เก็บเฉพาะในเบราว์เซอร์เครื่องนี้ รหัสผ่านถูกแปลงเป็นค่าแฮช (PBKDF2) ไม่ได้เก็บตัวอักษรจริง แต่ไม่ใช่ระบบล็อกอินแบบเซิร์ฟเวอร์ ใช้ข้ามเครื่องไม่ได้</div></div>`}
+document.addEventListener('submit',async e=>{if(e.target.id!=='af')return;e.preventDefault();const fd=new FormData(e.target),em=(fd.get('email')||'').trim().toLowerCase(),pw=fd.get('pw')||'',nm=(fd.get('name')||'').trim(),up=S.mode==='up';
+ const er=m=>{const x=$('#aerr');x.textContent=m;x.hidden=false};
+ if(!window.crypto||!crypto.subtle)return er('เบราว์เซอร์นี้ใช้การเข้ารหัสรหัสผ่านไม่ได้ ต้องเปิดผ่าน https หรือ localhost');
+ if(up&&!nm)return er('กรอกชื่อที่แสดง');if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return er('รูปแบบอีเมลไม่ถูกต้อง');if(pw.length<8)return er('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร');
+ let lk={};try{lk=JSON.parse(localStorage.getItem('pp_lk')||'{}')}catch(_){}
+ if(!up&&lk.until>Date.now())return er('ลองผิดหลายครั้ง กรุณารอ '+Math.ceil((lk.until-Date.now())/1000)+' วินาที');
+ const bt=$('#asub');bt.disabled=true;bt.textContent='กำลังตรวจสอบ…';
+ try{let u=USERS.find(x=>x.email===em);
+  if(up){if(u)throw'อีเมลนี้สมัครไว้แล้ว ลองเข้าสู่ระบบ';const salt=crypto.getRandomValues(new Uint8Array(16));u={id:'u'+Date.now()+Math.random().toString(36).slice(2,6),name:nm,email:em,salt:b64(salt),hash:await hashPw(pw,salt)};
+   if(!USERS.length){DB.forEach(x=>{if(!x.owner)x.owner=u.id});saveDB()}USERS.push(u);if(!saveU())throw'บันทึกบัญชีไม่ได้ (เบราว์เซอร์ปิดการเก็บข้อมูล)'}
+  else{const ok=u&&await hashPw(pw,ub(u.salt))===u.hash;if(!ok){lk.n=(lk.n||0)+1;if(lk.n>=5){lk={n:0,until:Date.now()+30000}}localStorage.setItem('pp_lk',JSON.stringify(lk));throw'อีเมลหรือรหัสผ่านไม่ถูกต้อง'}localStorage.removeItem('pp_lk')}
+  S.user=u;localStorage.setItem('pp_session',u.id);S.view='dash';render();toast(up?'สมัครสมาชิกสำเร็จ':'เข้าสู่ระบบแล้ว')}
+ catch(m){bt.disabled=false;bt.textContent=up?'สมัครสมาชิก':'เข้าสู่ระบบ';er(typeof m==='string'?m:'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง')}});
+
+/* ===== เหตุการณ์ ===== */
+function selPlant(id){const p=S.p,i=p.plants.findIndex(x=>x.pid===id);if(i>=0)p.plants.splice(i,1);else{const pl=PD(id);p.plants.push({pid:id,pct:100,h:pl.sp,v:pl.sp,pat:'g',n:''});}const e=p.plants.length;p.plants.forEach(s=>s.pct=r2(100/e));S.dirty=true}
+function info(id){const pl=PD(id);$('#dlg').innerHTML=`<h2>${esc(pl.th)}</h2><p><i>${esc(pl.sci)}</i> · ${esc(pl.en)}</p><p>${esc(pl.d)}</p><span class="tag">หมวด: ${pl.cat}</span><span class="tag">แสง: ${SUN[pl.sun]}</span><span class="tag">น้ำ: ${WAT[pl.w]}</span><span class="tag">ระยะปลูกแนะนำ ~${pl.sp} ม.</span><span class="tag">ดูแล: ${DF[pl.df]}</span>
+<p class="muted">แนวทางทั่วไป: ${WTIP[pl.w]} · ดินควรระบายน้ำดี · ใส่ปุ๋ยและตัดแต่งตามฉลากและฤดูกาล</p><div class="warn">ระยะปลูกเป็นค่าประมาณ ยังไม่ได้ระบุแหล่งอ้างอิงรายชนิด ขนาดโตเต็มที่ pH และเวลาออกดอกไม่ได้ระบุเพราะยังไม่ได้ตรวจสอบ</div>
+<div class="bar"><button class="btn" onclick="$('#dlg').close()">ปิด</button></div>`;$('#dlg').showModal()}
+function checkS1(){const p=S.p;if(!p.name.trim())return'กรอกชื่อโครงการ';if(!(+p.w>0&&+p.l>0))return'กรอกความกว้างและความยาวเป็นตัวเลขมากกว่า 0';if(+p.margin<0)return'ระยะเว้นขอบติดลบไม่ได้';if(p.ph!==''&&(+p.ph<0||+p.ph>14))return'pH ต้องอยู่ระหว่าง 0–14';return''}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)return go(g.dataset.go);const b=e.target.closest('[data-act]');
+ if(!b){const n=e.target.closest('[data-n]');if(n)$('#inf').textContent='🌱 '+n.dataset.n;return}
+ const a=b.dataset.act,id=+b.dataset.id||b.dataset.id,p=S.p;
+ const A={logout(){if(S.dirty&&!confirm('มีการแก้ไขที่ยังไม่ได้บันทึก ออกจากระบบโดยไม่บันทึกหรือไม่?'))return;S.user=null;S.p=null;S.dirty=false;localStorage.removeItem('pp_session');S.mode='in';render();toast('ออกจากระบบแล้ว')},
+ eye(){const i=$('#pw');i.type=i.type==='password'?'text':'password'},mode(){S.mode=S.mode==='in'?'up':'in';render()},
+ delacc(){const em=($('#dem').value||'').trim().toLowerCase(),u=USERS.find(x=>x.email===em);if(!u)return toast('ไม่พบบัญชีนี้ในเครื่อง');
+  if(!confirm('ลบบัญชี '+em+' และโครงการทั้งหมดของบัญชีนี้ถาวร? ย้อนกลับไม่ได้'))return;USERS=USERS.filter(x=>x.id!==u.id);DB=DB.filter(x=>x.owner!==u.id);saveU();saveDB();toast('ลบบัญชีแล้ว สมัครใหม่ได้เลย');S.mode='up';render()},
+ new(){S.p=newP();S.view='s1';render()},open(){go('s1',b.dataset.id)},
+ dup(){const o=own(b.dataset.id);if(!o)return;const c=JSON.parse(JSON.stringify(o));c.id='p'+Date.now();c.name+=' (สำเนา)';DB.push(c);localStorage.setItem('pp_projects',JSON.stringify(DB));render();toast('ทำสำเนาแล้ว')},
+ del(){if(confirm('ลบโครงการนี้ถาวร? ย้อนกลับไม่ได้')){DB=DB.filter(x=>!(x.id===b.dataset.id&&x.owner===S.user.id));localStorage.setItem('pp_projects',JSON.stringify(DB));render();toast('ลบแล้ว')}},
+ info(){info(+b.dataset.id)},tog(){selPlant(+b.dataset.id);bindCat()},
+ save(){const er=S.view==='s1'?checkS1():'';if(er)return toast(er);if(persist())toast('บันทึกแล้ว')},
+ n1(){const er=checkS1();if(er)return toast(er);persist();S.view='s2';render()},b1(){S.view='s1';render()},
+ n2(){if(!p.plants.length)return toast('เลือกพืชอย่างน้อย 1 ชนิด');persist();S.view='s3';render()},b2(){S.view='s2';render()},
+ n3(){const c=calcProject(p);if(c.err)return toast(c.err);persist();S.view='s4';render()},b3(){S.view='s3';render()},
+ calc(){render();toast('คำนวณใหม่แล้ว')},zi(){S.zoom=Math.min(4,S.zoom+.5);upd()},zo(){S.zoom=Math.max(1,S.zoom-.5);upd()},zr(){S.zoom=1;upd()},
+ chk(){const t=p.tasks.find(x=>x.id===b.dataset.id);t.done=b.checked;S.dirty=true;persist();render()},
+ dt(){p.tasks=p.tasks.filter(x=>x.id!==b.dataset.id);persist();render()},
+ at(){const t=$('#nt').value.trim();if(!t)return toast('พิมพ์ชื่องานก่อน');p.tasks.push({id:'t'+Date.now(),t,due:$('#nd').value,done:false});persist();render()},
+ pdf(){persist();print()},fin(){if(persist()){toast('บันทึกโครงการแล้ว');S.p=null;S.view='dash';render()}}};A[a]&&A[a]()});
+function upd(){const c=calcProject(S.p);$('#res').innerHTML=resHtml(S.p,c)}
+document.addEventListener('input',e=>{const t=e.target,p=S.p;if(!p)return;
+ if(t.dataset.k){p[t.dataset.k]=t.type==='number'&&t.value!==''?+t.value:t.value;S.dirty=true;if(S.view==='s1'){const ar=calcArea(+p.w,+p.l);$('#ar').innerHTML=ar?`พื้นที่ = ${p.w} × ${p.l} = <b>${ar} ตารางเมตร</b>`:'กรอกความกว้างและความยาวเป็นตัวเลขมากกว่า 0'}else if(S.view==='s3')upd()}
+ else if(t.dataset.f){const s=p.plants[+t.dataset.i];s[t.dataset.f]=t.dataset.f==='pat'?t.value:+t.value;S.dirty=true;upd()}});
+$('#hl').src=LOGO;$('#fav').href=LOGO;
+try{const sid=localStorage.getItem('pp_session');S.user=USERS.find(u=>u.id===sid)||null}catch(e){}
+render();
+</script>
+</body>
+</html>
